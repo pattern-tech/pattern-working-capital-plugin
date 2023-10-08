@@ -28,7 +28,7 @@ contract WorkingCapitalSetup is PluginSetup {
         returns (address plugin, PreparedSetupData memory preparedSetupData)
     {
         // Decode `_data` to extract the params needed for cloning and initializing the `Admin` plugin.
-        address admin = abi.decode(_data, (address));
+        (address admin, uint256 monthlyLimit) = abi.decode(_data, (address, uint256));
 
         if (admin == address(0)) {
             revert("The admin address can not be zero");
@@ -38,7 +38,7 @@ contract WorkingCapitalSetup is PluginSetup {
         plugin = workingCapitalImplementation.clone();
 
         // Initialize cloned plugin contract.
-        WorkingCapital(plugin).initialize(IDAO(_dao), admin);
+        WorkingCapital(plugin).initialize(IDAO(_dao), admin,monthlyLimit);
 
         // Prepare permissions
         PermissionLib.MultiTargetPermission[]
