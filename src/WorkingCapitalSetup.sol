@@ -11,6 +11,11 @@ import {DAO} from "@aragon/osx/core/dao/DAO.sol";
 contract WorkingCapitalSetup is PluginSetup {
     using Clones for address;
 
+    struct InputData {
+        uint256 hatId;
+        uint256 spendingLimitETH;
+    }
+    
     /// @notice The address of `WorkingCapital` plugin logic contract to be cloned.
     address private immutable workingCapitalImplementation;
 
@@ -28,33 +33,20 @@ contract WorkingCapitalSetup is PluginSetup {
         returns (address plugin, PreparedSetupData memory preparedSetupData)
     {
         // Decode `_data` to extract the params needed for cloning and initializing the `Admin` plugin.
-        (address admin, uint256 monthlyLimit) = abi.decode(_data, (address, uint256));
-
-        if (admin == address(0)) {
-            revert("The admin address can not be zero");
-        }
+        InputData memory inputData = abi.decode(_data, (InputData));
 
         // Clone plugin contract.
         plugin = workingCapitalImplementation.clone();
 
         // Initialize cloned plugin contract.
-        WorkingCapital(plugin).initialize(IDAO(_dao), admin,monthlyLimit);
+        WorkingCapital(plugin).initialize(IDAO(_dao), inputData.hatId, inputData.spendingLimitETH);
 
         // Prepare permissions
         PermissionLib.MultiTargetPermission[]
-            memory permissions = new PermissionLib.MultiTargetPermission[](2);
-
-        // Grant the `ADMIN_EXECUTE_PERMISSION` of the plugin to the admin.
-        permissions[0] = PermissionLib.MultiTargetPermission({
-            operation: PermissionLib.Operation.Grant,
-            where: plugin,
-            who: admin,
-            condition: PermissionLib.NO_CONDITION,
-            permissionId: WorkingCapital(plugin).ADMIN_EXECUTE_PERMISSION_ID()
-        });
+            memory permissions = new PermissionLib.MultiTargetPermission[](1);
 
         // Grant the `EXECUTE_PERMISSION` on the DAO to the plugin.
-        permissions[1] = PermissionLib.MultiTargetPermission({
+        permissions[0] = PermissionLib.MultiTargetPermission({
             operation: PermissionLib.Operation.Grant,
             where: _dao,
             who: plugin,
@@ -76,20 +68,11 @@ contract WorkingCapitalSetup is PluginSetup {
     {
         // Collect addresses
         address plugin = _payload.plugin;
-        address admin = WorkingCapital(plugin).admin();
 
         // Prepare permissions
-        permissions = new PermissionLib.MultiTargetPermission[](2);
+        permissions = new PermissionLib.MultiTargetPermission[](1);
 
         permissions[0] = PermissionLib.MultiTargetPermission({
-            operation: PermissionLib.Operation.Revoke,
-            where: plugin,
-            who: admin,
-            condition: PermissionLib.NO_CONDITION,
-            permissionId: WorkingCapital(plugin).ADMIN_EXECUTE_PERMISSION_ID()
-        });
-
-        permissions[1] = PermissionLib.MultiTargetPermission({
             operation: PermissionLib.Operation.Revoke,
             where: _dao,
             who: plugin,

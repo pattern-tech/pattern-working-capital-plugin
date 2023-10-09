@@ -1,7 +1,7 @@
 import buildMetadata from './src/build-metadata.json';
 import releaseMetadata from './src/release-metadata.json';
 
-export const PLUGIN_REPO_ENS_NAME = 'tokenvoting-test-3189';
+export const PLUGIN_REPO_ENS_NAME = 'wc-test-0318911';
 export const PLUGIN_CONTRACT_NAME = 'WorkingCapital';
 export const PLUGIN_SETUP_CONTRACT_NAME = 'WorkingCapitalSetup';
 
