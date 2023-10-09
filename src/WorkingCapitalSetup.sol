@@ -39,7 +39,6 @@ contract WorkingCapitalSetup is PluginSetup {
         plugin = workingCapitalImplementation.clone();
 
         // Initialize cloned plugin contract.
-        // TODO add the input amount from data struct 
         WorkingCapital(plugin).initialize(IDAO(_dao), inputData.hatId, inputData.spendingLimitETH);
 
         // Prepare permissions
