@@ -10,6 +10,8 @@ import {IHats} from "./../hatsprotocol/src/Interfaces/IHats.sol";
 
 contract WorkingCapital is PluginCloneable {
 
+    bytes32 public constant UPDATE_SPENDING_LIMIT_PERMISSION_ID = keccak256('UPDATE_SPENDING_LIMIT_PERMISSION');
+
     IHats public hatsProtocolInstance;
     uint256 public hatId; 
     uint256 public spendingLimitETH;
@@ -66,5 +68,10 @@ contract WorkingCapital is PluginCloneable {
         require(hatsProtocolInstance.isWearerOfHat(msg.sender, hatId), "Sender is not wearer of the hat");
         hasRemainingBudget(_actions);
         dao().execute({_callId: 0x0, _actions: _actions, _allowFailureMap: 0});
+    }
+
+    /// @param _spendingLimitETH The ETH spending limit
+    function updateSpendingLimit(uint256 _spendingLimitETH) external auth(UPDATE_SPENDING_LIMIT_PERMISSION_ID){
+        spendingLimitETH = _spendingLimitETH;
     }
 }

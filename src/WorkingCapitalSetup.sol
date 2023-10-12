@@ -43,7 +43,7 @@ contract WorkingCapitalSetup is PluginSetup {
 
         // Prepare permissions
         PermissionLib.MultiTargetPermission[]
-            memory permissions = new PermissionLib.MultiTargetPermission[](1);
+            memory permissions = new PermissionLib.MultiTargetPermission[](2);
 
         // Grant the `EXECUTE_PERMISSION` on the DAO to the plugin.
         permissions[0] = PermissionLib.MultiTargetPermission({
@@ -52,6 +52,14 @@ contract WorkingCapitalSetup is PluginSetup {
             who: plugin,
             condition: PermissionLib.NO_CONDITION,
             permissionId: DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
+        });
+
+        permissions[1] = PermissionLib.MultiTargetPermission({
+            operation: PermissionLib.Operation.Grant,
+            where: plugin,
+            who: _dao,
+            condition: PermissionLib.NO_CONDITION,
+            permissionId: WorkingCapital(plugin).UPDATE_SPENDING_LIMIT_PERMISSION_ID()
         });
 
         preparedSetupData.permissions = permissions;
@@ -70,7 +78,7 @@ contract WorkingCapitalSetup is PluginSetup {
         address plugin = _payload.plugin;
 
         // Prepare permissions
-        permissions = new PermissionLib.MultiTargetPermission[](1);
+        permissions = new PermissionLib.MultiTargetPermission[](2);
 
         permissions[0] = PermissionLib.MultiTargetPermission({
             operation: PermissionLib.Operation.Revoke,
@@ -78,6 +86,14 @@ contract WorkingCapitalSetup is PluginSetup {
             who: plugin,
             condition: PermissionLib.NO_CONDITION,
             permissionId: DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
+        });
+
+        permissions[0] = PermissionLib.MultiTargetPermission({
+            operation: PermissionLib.Operation.Revoke,
+            where: plugin,
+            who: _dao,
+            condition: PermissionLib.NO_CONDITION,
+            permissionId: WorkingCapital(plugin).UPDATE_SPENDING_LIMIT_PERMISSION_ID()
         });
     }
 
