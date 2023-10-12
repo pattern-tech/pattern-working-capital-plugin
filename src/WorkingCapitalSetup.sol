@@ -13,7 +13,8 @@ contract WorkingCapitalSetup is PluginSetup {
 
     struct InputData {
         uint256 hatId;
-        uint256 spendingLimitETH;
+        uint256[] spendingLimit;
+        address [] token;
     }
     
     /// @notice The address of `WorkingCapital` plugin logic contract to be cloned.
@@ -39,7 +40,7 @@ contract WorkingCapitalSetup is PluginSetup {
         plugin = workingCapitalImplementation.clone();
 
         // Initialize cloned plugin contract.
-        WorkingCapital(plugin).initialize(IDAO(_dao), inputData.hatId, inputData.spendingLimitETH);
+        WorkingCapital(plugin).initialize(IDAO(_dao), inputData.hatId, inputData.token,inputData.spendingLimit);
 
         // Prepare permissions
         PermissionLib.MultiTargetPermission[]
