@@ -12,15 +12,10 @@ import {DAO} from "@aragon/osx/core/dao/DAO.sol";
 contract WorkingCapitalSetup is PluginSetup {
     using Clones for address;
 
-    struct Budget {
-        address token;
-        uint256 spendingLimit;
-    }
 
     struct InputData {
         uint256 hatId;
-        Budget[] budget;
-
+        WorkingCapital.Budget[] budget;
     }
     
     /// @notice The address of `WorkingCapital` plugin logic contract to be cloned.

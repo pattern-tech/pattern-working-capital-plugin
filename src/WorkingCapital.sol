@@ -32,32 +32,25 @@ contract WorkingCapital is PluginCloneable {
     uint private currentMonth;
     uint private currentYear;
     mapping(address => uint256) private remainingBudget;
-    address[] availableTokens;
+    address[] public availableTokens;
+
+
+
+
+
 
     /// @notice Initializes the contract.
     /// @param _dao The associated DAO.
     /// @param _hatId The id of the hat.
-    function initialize(IDAO _dao, uint256 _hatId,Budget[] memory calldata _budget) external initializer {
+    function initialize(IDAO _dao, uint256 _hatId,Budget[] calldata _budget) external initializer {
         __PluginCloneable_init(_dao);
         hatId = _hatId;
         // TODO get this from environment per network (this is goerli)
         hatsProtocolInstance = IHats(0x3bc1A0Ad72417f2d411118085256fC53CBdDd137);
-        for (uint j=0; j < _token.length; j+=1) {
+        for (uint j=0; j < _budget.length; j+=1) {
             spendingLimit[_budget[j].token] = _budget[j].spendingLimit;
             availableTokens.push(_budget[j].token);
         }
-    }
-
-
-    /// @notice Check that the given token has allowance
-    /// @param _token check that given token has allowance
-    function isTokenAvailable(address _token) internal view returns (bool) {
-        for (uint256 i = 0; i < availableTokens.length; i++) {
-            if (availableTokens[i] == _token) {
-                return true;
-            }
-        }
-        return false;
     }
 
 
@@ -78,7 +71,7 @@ contract WorkingCapital is PluginCloneable {
                 _value=_actions[j].value;
                 _data= new bytes(0);
                 _token=address(0);
-                require(isTokenAvailable(address(0)),"It is not available token in this plugin");
+                require(spendingLimit[address(0x0)] != 0,"It is not available token in this plugin");
             }
             else{
                 _to=_actions[j].erc20Address;
@@ -86,7 +79,7 @@ contract WorkingCapital is PluginCloneable {
                 bytes memory data = abi.encodeWithSignature("transfer(address,uint256)", _actions[j].to, _actions[j].value);
                 _data= data;
                 _token=_actions[j].erc20Address;
-                require(isTokenAvailable(_actions[j].erc20Address),"It is not available token in this plugin");
+                require(spendingLimit[_actions[j].erc20Address]!=0,"It is not available token in this plugin");
 
             }
             // if we are on the month that we were
