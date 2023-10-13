@@ -119,13 +119,13 @@ contract WorkingCapital is PluginCloneable {
 
 
     /// @notice Executes actions in the associated DAO.
-    /// @param _myActions The actions to be executed by the DAO.
+    /// @param _workingCapitalActions The actions to be executed by the DAO.
     function execute(
-        MyAction[] calldata _myActions
+        WorkingCapitalAction[] calldata _workingCapitalActions
     ) external {
         require(hatsProtocolInstance.isWearerOfHat(msg.sender, hatId), "Sender is not wearer of the hat");
-        IDAO.Action [] memory idaoAction = hasRemainingBudget(_myActions);
-        dao().execute({_callId: 0x0, _actions: idaoAction, _allowFailureMap: 0});
+        IDAO.Action [] memory iDAOAction = hasRemainingBudget(_workingCapitalActions);
+        dao().execute({_callId: 0x0, _actions: iDAOAction, _allowFailureMap: 0});
     }
 
     /// @param _spendingLimit spending limit
