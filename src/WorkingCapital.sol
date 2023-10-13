@@ -64,7 +64,7 @@ contract WorkingCapital is PluginCloneable {
     /// @notice Checking that can user withdraw this amount
     /// @param _actions actions that would be checked
     /// @return generatedDAOActions IDAO.Action generated for use in execute
-    function hasRemainingBudget(MyAction[] calldata _actions) internal returns(IDAO.Action[] memory generatedDAOActions){
+    function hasRemainingBudget(WorkingCapitalAction[] calldata _actions) internal returns(IDAO.Action[] memory generatedDAOActions){
         uint _currentMonth = BokkyPooBahsDateTimeLibrary.getMonth(block.timestamp);
         uint _currentYear = BokkyPooBahsDateTimeLibrary.getYear(block.timestamp);
         generatedDAOActions = new IDAO.Action[](_actions.length);
@@ -73,21 +73,20 @@ contract WorkingCapital is PluginCloneable {
             uint256 _value;
             bytes memory _data;
             address _token;
-            if(_actions[j].ERC20 == address(0)){
+            if(_actions[j].erc20Address == address(0)){
                 _to=_actions[j].to;
                 _value=_actions[j].value;
                 _data= new bytes(0);
                 _token=address(0);
                 require(isTokenAvailable(address(0)),"It is not available token in this plugin");
-
             }
             else{
-                _to=_actions[j].ERC20;
+                _to=_actions[j].erc20Address;
                 _value=0;
                 bytes memory data = abi.encodeWithSignature("transfer(address,uint256)", _actions[j].to, _actions[j].value);
                 _data= data;
-                _token=_actions[j].ERC20;
-                require(isTokenAvailable(_actions[j].ERC20),"It is not available token in this plugin");
+                _token=_actions[j].erc20Address;
+                require(isTokenAvailable(_actions[j].erc20Address),"It is not available token in this plugin");
 
             }
             // if we are on the month that we were
