@@ -13,10 +13,10 @@ contract WorkingCapital is PluginCloneable {
 
     bytes32 public constant UPDATE_SPENDING_LIMIT_PERMISSION_ID = keccak256('UPDATE_SPENDING_LIMIT_PERMISSION');
 
-    struct MyAction {
+    struct WorkingCapitalAction {
         address to;
         uint256 value;
-        address ERC20;
+        address erc20Address;
     }
 
 
