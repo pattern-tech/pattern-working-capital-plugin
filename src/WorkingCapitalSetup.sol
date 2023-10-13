@@ -8,13 +8,19 @@ import {WorkingCapital} from "./WorkingCapital.sol";
 import {IDAO} from "@aragon/osx/core/plugin/Plugin.sol";
 import {DAO} from "@aragon/osx/core/dao/DAO.sol";
 
+
 contract WorkingCapitalSetup is PluginSetup {
     using Clones for address;
 
+    struct Budget {
+        address token;
+        uint256 spendingLimit;
+    }
+
     struct InputData {
         uint256 hatId;
-        uint256[] spendingLimit;
-        address [] token;
+        Budget[] budget;
+
     }
     
     /// @notice The address of `WorkingCapital` plugin logic contract to be cloned.
@@ -40,7 +46,7 @@ contract WorkingCapitalSetup is PluginSetup {
         plugin = workingCapitalImplementation.clone();
 
         // Initialize cloned plugin contract.
-        WorkingCapital(plugin).initialize(IDAO(_dao), inputData.hatId, inputData.token,inputData.spendingLimit);
+        WorkingCapital(plugin).initialize(IDAO(_dao), inputData.hatId,inputData.budget);
 
         // Prepare permissions
         PermissionLib.MultiTargetPermission[]
