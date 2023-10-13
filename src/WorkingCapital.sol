@@ -19,6 +19,11 @@ contract WorkingCapital is PluginCloneable {
         address erc20Address;
     }
 
+    struct Budget {
+        address token;
+        uint256 spendingLimit;
+    }
+
 
     IHats public hatsProtocolInstance;
     uint256 public hatId;
@@ -32,17 +37,15 @@ contract WorkingCapital is PluginCloneable {
     /// @notice Initializes the contract.
     /// @param _dao The associated DAO.
     /// @param _hatId The id of the hat.
-    function initialize(IDAO _dao, uint256 _hatId,address[] memory _token ,uint256[] memory _spendingLimit) external initializer {
+    function initialize(IDAO _dao, uint256 _hatId,Budget[] memory calldata _budget) external initializer {
         __PluginCloneable_init(_dao);
         hatId = _hatId;
         // TODO get this from environment per network (this is goerli)
         hatsProtocolInstance = IHats(0x3bc1A0Ad72417f2d411118085256fC53CBdDd137);
-        require(_token.length==_spendingLimit.length,"Length of token address and spendingLimit array is not equal");
-//        spendingLimit = _spendingLimit;
         for (uint j=0; j < _token.length; j+=1) {
-            spendingLimit[_token[j]]=_spendingLimit[j];
+            spendingLimit[_budget[j].token] = _budget[j].spendingLimit;
+            availableTokens.push(_budget[j].token);
         }
-        availableTokens=_token;
     }
 
 
