@@ -14,8 +14,8 @@ contract WorkingCapitalSetup is PluginSetup {
 
 
     struct InputData {
+        uint256 budgetETH;
         uint256 hatId;
-        WorkingCapital.Budget[] budget;
     }
     
     /// @notice The address of `WorkingCapital` plugin logic contract to be cloned.
@@ -35,13 +35,15 @@ contract WorkingCapitalSetup is PluginSetup {
         returns (address plugin, PreparedSetupData memory preparedSetupData)
     {
         // Decode `_data` to extract the params needed for cloning and initializing the `Admin` plugin.
+
+
         InputData memory inputData = abi.decode(_data, (InputData));
 
         // Clone plugin contract.
         plugin = workingCapitalImplementation.clone();
 
         // Initialize cloned plugin contract.
-        WorkingCapital(plugin).initialize(IDAO(_dao), inputData.hatId,inputData.budget);
+        WorkingCapital(plugin).initialize(IDAO(_dao), inputData.hatId,inputData.budgetETH);
 
         // Prepare permissions
         PermissionLib.MultiTargetPermission[]
