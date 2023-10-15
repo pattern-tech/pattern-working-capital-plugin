@@ -58,7 +58,7 @@ contract WorkingCapitalSetup is PluginSetup {
             condition: PermissionLib.NO_CONDITION,
             permissionId: DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
         });
-
+        // Grant the `UPDATE_SPENDING_LIMIT_PERMISSION_ID` on the plugin to the DAO.
         permissions[1] = PermissionLib.MultiTargetPermission({
             operation: PermissionLib.Operation.Grant,
             where: plugin,
