@@ -12,10 +12,10 @@ contract WorkingCapitalSetup is PluginSetup {
     using Clones for address;
 
     struct InputData {
+        uint256 budgetETH;
         uint256 hatId;
-        uint256 spendingLimitETH;
     }
-    
+
     /// @notice The address of `WorkingCapital` plugin logic contract to be cloned.
     address private immutable workingCapitalImplementation;
 
@@ -33,13 +33,18 @@ contract WorkingCapitalSetup is PluginSetup {
         returns (address plugin, PreparedSetupData memory preparedSetupData)
     {
         // Decode `_data` to extract the params needed for cloning and initializing the `Admin` plugin.
+
         InputData memory inputData = abi.decode(_data, (InputData));
 
         // Clone plugin contract.
         plugin = workingCapitalImplementation.clone();
 
         // Initialize cloned plugin contract.
-        WorkingCapital(plugin).initialize(IDAO(_dao), inputData.hatId, inputData.spendingLimitETH);
+        WorkingCapital(plugin).initialize(
+            IDAO(_dao),
+            inputData.hatId,
+            inputData.budgetETH
+        );
 
         // Prepare permissions
         PermissionLib.MultiTargetPermission[]
@@ -53,13 +58,14 @@ contract WorkingCapitalSetup is PluginSetup {
             condition: PermissionLib.NO_CONDITION,
             permissionId: DAO(payable(_dao)).EXECUTE_PERMISSION_ID()
         });
-
+        // Grant the `UPDATE_SPENDING_LIMIT_PERMISSION_ID` on the plugin to the DAO.
         permissions[1] = PermissionLib.MultiTargetPermission({
             operation: PermissionLib.Operation.Grant,
             where: plugin,
             who: _dao,
             condition: PermissionLib.NO_CONDITION,
-            permissionId: WorkingCapital(plugin).UPDATE_SPENDING_LIMIT_PERMISSION_ID()
+            permissionId: WorkingCapital(plugin)
+                .UPDATE_SPENDING_LIMIT_PERMISSION_ID()
         });
 
         preparedSetupData.permissions = permissions;
@@ -93,7 +99,8 @@ contract WorkingCapitalSetup is PluginSetup {
             where: plugin,
             who: _dao,
             condition: PermissionLib.NO_CONDITION,
-            permissionId: WorkingCapital(plugin).UPDATE_SPENDING_LIMIT_PERMISSION_ID()
+            permissionId: WorkingCapital(plugin)
+                .UPDATE_SPENDING_LIMIT_PERMISSION_ID()
         });
     }
 
